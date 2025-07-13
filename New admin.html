@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EliteFootyTips - Football Predictions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2C3E50;
+            --secondary: #3498DB;
+            --accent: #E74C3C;
+            --vip: #F39C12;
+            --success: #27AE60;
+            --light: #ECF0F1;
+            --dark: #2C3E50;
+            --gray: #95A5A6;
+        }
+        
+        body {
+            background-color: #F8F9FA;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark);
+        }
+        
+        /* Header/Navigation */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary), #1A252F);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        .navbar-brand i {
+            color: var(--vip);
+        }
+        
+        .notification-btn {
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .notification-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .notification-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+        }
+        
+        /* Main Content */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Tabs Navigation */
+        .nav-tabs {
+            border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            color: var(--gray);
+            font-weight: 600;
+            padding: 12px 20px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background-color: transparent;
+        }
+        
+        .nav-tabs .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 3px 3px 0 0;
+        }
+        
+        .nav-tabs .nav-link.vip-tab {
+            color: var(--vip);
+        }
+        
+        .nav-tabs .nav-link.vip-tab.active {
+            color: var(--vip);
+        }
+        
+        .nav-tabs .nav-link.vip-tab.active::after {
+            background-color: var(--vip);
+        }
+        
+        /* Prediction Cards */
+        .prediction-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .prediction-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .prediction-card .card-body {
+            padding: 20px;
+        }
+        
+        .vip-card {
+            border-left: 4px solid var(--vip);
+        }
+        
+        .vip-badge {
+            background-color: var(--vip);
+            color: white;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .league-badge {
+            background-color: var(--light);
+            color: var(--dark);
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .status-badge {
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .prediction-tip {
+            background-color: var(--secondary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+        
+        .confidence-bar {
+            height: 6px;
+            background-color: var(--light);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .confidence-level {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), #2ECC71);
+            border-radius: 10px;
+        }
+        
+        .kickoff-time {
+            display: flex;
+            align-items: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+        
+        .kickoff-time i {
+            margin-right: 5px;
+        }
+        
+        /* VIP Lock Overlay */
+        .vip-lock-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 2;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+        }
+        
+        .vip-lock-overlay i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--vip);
+        }
+        
+        .vip-lock-overlay h5 {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        /* Notification Sidebar */
+        .notification-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1050;
+            transition: right 0.3s ease;
+            padding: 20px;
+        }
+        
+        .notification-sidebar.show {
+            right: 0;
+        }
+        
+        .notification-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1040;
+            display: none;
+        }
+        
+        .notification-overlay.show {
+            display: block;
+        }
+        
+        .notification-item {
+            border-left: 3px solid var(--secondary);
+            transition: all 0.3s;
+        }
+        
+        .notification-item:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        
+        /* Subscription Modal */
+        .subscription-modal .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .subscription-modal .modal-header {
+            background: linear-gradient(135deg, var(--primary), #1A252F);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+        }
+        
+        .subscription-tier {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .subscription-tier:hover {
+            border-color: var(--vip);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.1);
+        }
+        
+        .subscription-tier.selected {
+            border: 2px solid var(--vip);
+            background-color: rgba(243, 156, 18, 0.05);
+        }
+        
+        .subscription-tier h5 {
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .subscription-tier .price {
+            color: var(--success);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .payment-instructions {
+            background-color: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .payment-number {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            letter-spacing: 1px;
+        }
+        
+        /* Contact Admin Section */
+        .contact-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        .contact-card .card-body {
+            padding: 30px;
+        }
+        
+        .whatsapp-btn {
+            background-color: #25D366;
+            border: none;
+            padding: 12px 25px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+        
+        .whatsapp-btn:hover {
+            background-color: #128C7E;
+            transform: translateY(-2px);
+        }
+        
+        .vip-btn {
+            background-color: var(--vip);
+            border: none;
+            padding: 12px 25px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+        
+        .vip-btn:hover {
+            background-color: #E67E22;
+            transform: translateY(-2px);
+        }
+        
+        /* Subscription Status */
+        .subscription-status {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background-color: #FEF9E7;
+            color: #9A7D0A;
+            border-left: 4px solid #F1C40F;
+        }
+        
+        .status-active {
+            background-color: #E8F8F5;
+            color: #1D8348;
+            border-left: 4px solid #27AE60;
+        }
+        
+        .status-rejected {
+            background-color: #FDEDEC;
+            color: #C0392B;
+            border-left: 4px solid #E74C3C;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .notification-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .nav-tabs .nav-link {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-futbol me-2"></i>EliteFootyTips
+            </a>
+            <div class="d-flex">
+                <button class="btn btn-outline-light notification-btn me-2" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-count" id="notificationCount">
+                        0
+                    </span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Notification Sidebar -->
+    <div class="notification-overlay" id="notificationOverlay"></div>
+    <div class="notification-sidebar" id="notificationSidebar">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="mb-0"><i class="fas fa-bell me-2 text-primary"></i>Notifications</h5>
+            <button class="btn btn-sm btn-outline-secondary" id="closeNotifications">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="list-group" id="notificationsList">
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading notifications...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <ul class="nav nav-tabs mb-4" id="predictionTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="free-tab" data-bs-toggle="tab" data-bs-target="#free-tips" type="button" role="tab">
+                    <i class="fas fa-users me-1"></i>Free Tips
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link vip-tab" id="vip-tab" data-bs-toggle="tab" data-bs-target="#vip-tips" type="button" role="tab">
+                    <i class="fas fa-crown me-1"></i>VIP Tips
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-admin" type="button" role="tab">
+                    <i class="fas fa-headset me-1"></i>Contact Admin
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="predictionTabsContent">
+            <!-- Free Tips Tab -->
+            <div class="tab-pane fade show active" id="free-tips" role="tabpanel">
+                <div class="row" id="freePredictionsContainer">
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading free predictions...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIP Tips Tab -->
+            <div class="tab-pane fade" id="vip-tips" role="tabpanel">
+                <div class="row" id="vipPredictionsContainer">
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading VIP predictions...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Admin Tab -->
+            <div class="tab-pane fade" id="contact-admin" role="tabpanel">
+                <div class="card contact-card">
+                    <div class="card-body text-center">
+                        <div class="mb-4">
+                            <i class="fas fa-headset fa-3x mb-3" style="color: var(--secondary);"></i>
+                            <h4>Contact Admin</h4>
+                            <p class="text-muted">Need help or have questions? Our support team is here to assist you.</p>
+                        </div>
+                        
+                        <div class="d-flex justify-content-center mt-4">
+                            <a href="https://wa.me/256743072427" class="btn whatsapp-btn btn-lg">
+                                <i class="fab fa-whatsapp me-2"></i>Chat on WhatsApp
+                            </a>
+                        </div>
+                        
+                        <div class="mt-5 pt-4 border-top">
+                            <div class="mb-4">
+                                <i class="fas fa-crown fa-3x mb-3" style="color: var(--vip);"></i>
+                                <h4>VIP Membership</h4>
+                                <p class="text-muted">Get access to premium predictions with higher accuracy rates.</p>
+                            </div>
+                            
+                            <!-- Subscription Status Display -->
+                            <div id="subscriptionStatus" class="subscription-status status-pending">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <span id="statusText">Your subscription request is pending approval</span>
+                            </div>
+                            
+                            <button class="btn vip-btn btn-lg" data-bs-toggle="modal" data-bs-target="#subscriptionModal">
+                                <i class="fas fa-crown me-2"></i>Become VIP Member
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIP Subscription Modal -->
+    <div class="modal fade subscription-modal" id="subscriptionModal" tabindex="-1" aria-labelledby="subscriptionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="subscriptionModalLabel"><i class="fas fa-crown me-2"></i>VIP Subscription Plans</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="mb-4">Choose Your Plan:</h5>
+                            <div class="subscription-tier" onclick="selectTier(this, 'one_week')">
+                                <h5><i class="fas fa-calendar-week me-2"></i>1 Week VIP Access</h5>
+                                <p class="price">UGX 7,000</p>
+                                <small class="text-muted">Access all VIP tips for 7 days</small>
+                            </div>
+                            <div class="subscription-tier" onclick="selectTier(this, 'two_weeks')">
+                                <h5><i class="fas fa-calendar-alt me-2"></i>2 Weeks VIP Access</h5>
+                                <p class="price">UGX 15,000</p>
+                                <small class="text-muted">Access all VIP tips for 14 days</small>
+                            </div>
+                            <div class="subscription-tier" onclick="selectTier(this, 'one_month')">
+                                <h5><i class="fas fa-calendar me-2"></i>1 Month VIP Access</h5>
+                                <p class="price">UGX 30,000</p>
+                                <small class="text-muted">Access all VIP tips for 30 days</small>
+                            </div>
+                            <div class="subscription-tier" onclick="selectTier(this, 'one_year')">
+                                <h5><i class="fas fa-calendar-star me-2"></i>1 Year VIP Access</h5>
+                                <p class="price">UGX 70,000</p>
+                                <small class="text-muted">Access all VIP tips for 365 days</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="payment-instructions">
+                                <h5 class="mb-4"><i class="fas fa-money-bill-wave me-2"></i>Payment Instructions</h5>
+                                <ol class="mb-4">
+                                    <li class="mb-3">Select your preferred subscription plan from the options</li>
+                                    <li class="mb-3">Send payment via Mobile Money to the number below:</li>
+                                    <div class="alert alert-light py-3 px-3 mb-4">
+                                        <p class="mb-1 fw-bold text-center">Payment Number</p>
+                                        <p class="payment-number text-center">+256790651242</p>
+                                        <p class="mb-0 text-center"><small>Reference: Your username</small></p>
+                                    </div>
+                                    <li class="mb-3">After payment, click the "Request Subscription" button below</li>
+                                    <li>Our admin will verify your payment and activate your subscription</li>
+                                </ol>
+                                
+                                <div class="d-grid gap-3">
+                                    <button id="requestSubscriptionBtn" class="btn btn-primary py-3" disabled onclick="requestSubscription()">
+                                        <i class="fas fa-paper-plane me-2"></i>Request Subscription
+                                    </button>
+                                    <button class="btn btn-outline-secondary py-3" data-bs-dismiss="modal">
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Verification Modal -->
+    <div class="modal fade" id="verificationModal" tabindex="-1" aria-labelledby="verificationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-5">
+                    <div class="mb-4">
+                        <div class="icon-container bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-check-circle fa-3x text-success"></i>
+                        </div>
+                    </div>
+                    <h4 class="mb-3">Request Submitted Successfully!</h4>
+                    <p class="text-muted mb-4">Your subscription request has been sent to our admin for verification. You'll receive a notification once your payment is verified and VIP access is activated.</p>
+                    <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mock data storage (in a real app, this would be a database)
+        const predictions = [
+            { id: 1, match: "Arsenal vs Chelsea", league: "Premier League", kickoff: "2023-07-20T20:00", tip: "Over 2.5 Goals", odds: 1.85, confidence: 75, status: "pending", isVip: false },
+            { id: 2, match: "Barcelona vs Real Madrid", league: "La Liga", kickoff: "2023-07-21T21:00", tip: "Both Teams to Score", odds: 1.65, confidence: 80, status: "pending", isVip: false },
+            { id: 3, match: "Bayern Munich vs Dortmund", league: "Bundesliga", kickoff: "2023-07-22T19:30", tip: "Home Win", odds: 1.90, confidence: 70, status: "pending", isVip: true },
+            { id: 4, match: "PSG vs Marseille", league: "Ligue 1", kickoff: "2023-07-23T20:45", tip: "Over 3.5 Goals", odds: 2.10, confidence: 65, status: "pending", isVip: true }
+        ];
+        
+        const notifications = [
+            { id: 1, title: "New Free Tips Added", message: "Check out our latest predictions for today's matches", date: "2023-07-15 09:00" },
+            { id: 2, title: "VIP Subscription Available", message: "Upgrade to VIP for premium predictions", date: "2023-07-14 11:30" }
+        ];
+        
+        // Current user (in a real app, this would come from authentication)
+        const currentUser = {
+            id: 1,
+            name: "John Doe",
+            email: "john@example.com",
+            phone: "+256712345678",
+            subscription: null
+        };
+        
+        // VIP Subscription Variables
+        let selectedTier = null;
+        let currentSubscriptionStatus = currentUser.subscription ? currentUser.subscription.status : null;
+        
+        // Format date/time
+        function formatDateTime(dateString) {
+            const options = { 
+                weekday: 'short', 
+                day: 'numeric', 
+                month: 'short',
+                hour: '2-digit', 
+                minute: '2-digit'
+            };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+        
+        // Format date only
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+        
+        // Load predictions
+        function loadPredictions() {
+            const freeContainer = document.getElementById("freePredictionsContainer");
+            const vipContainer = document.getElementById("vipPredictionsContainer");
+            
+            freeContainer.innerHTML = '';
+            vipContainer.innerHTML = '';
+            
+            // Load free predictions
+            const freePredictions = predictions.filter(p => !p.isVip);
+            if (freePredictions.length > 0) {
+                freePredictions.forEach(prediction => {
+                    freeContainer.innerHTML += createPredictionCard(prediction, false);
+                });
+            } else {
+                freeContainer.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            No free predictions available at the moment. Check back later!
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Load VIP predictions
+            const vipPredictions = predictions.filter(p => p.isVip);
+            if (vipPredictions.length > 0) {
+                vipPredictions.forEach(prediction => {
+                    vipContainer.innerHTML += createPredictionCard(prediction, true);
+                });
+                
+                // Add lock overlay if user doesn't have VIP access
+                if (!currentSubscriptionStatus || currentSubscriptionStatus !== "active") {
+                    vipContainer.querySelectorAll('.prediction-card').forEach(card => {
+                        card.innerHTML += `
+                            <div class="vip-lock-overlay">
+                                <i class="fas fa-lock"></i>
+                                <h5>VIP Content Locked</h5>
+                                <p class="mb-3">Subscribe to VIP to access premium predictions</p>
+                                <button class="btn vip-btn" data-bs-toggle="modal" data-bs-target="#subscriptionModal">
+                                    <i class="fas fa-crown me-2"></i>Unlock VIP
+                                </button>
+                            </div>
+                        `;
+                    });
+                }
+            } else {
+                vipContainer.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            No VIP predictions available at the moment. Check back later!
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Create prediction card HTML
+        function createPredictionCard(prediction, isVip) {
+            return `
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card prediction-card h-100 ${isVip ? 'vip-card' : ''}">
+                        <div class="card-body">
+                            ${isVip ? '<span class="vip-badge mb-3"><i class="fas fa-crown me-1"></i>VIP</span>' : ''}
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="league-badge">${prediction.league}</span>
+                                <span class="status-badge bg-${prediction.status === 'won' ? 'success' : prediction.status === 'lost' ? 'danger' : 'warning'}">
+                                    ${prediction.status}
+                                </span>
+                            </div>
+                            <h5 class="card-title mb-3">${prediction.match}</h5>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <span class="prediction-tip">${prediction.tip}</span>
+                                <span class="text-muted">Odds: ${prediction.odds}</span>
+                            </div>
+                            <div class="confidence mb-3">
+                                <small class="text-muted">Confidence: ${prediction.confidence}%</small>
+                                <div class="confidence-bar">
+                                    <div class="confidence-level" style="width: ${prediction.confidence}%"></div>
+                                </div>
+                            </div>
+                            <div class="kickoff-time">
+                                <i class="fas fa-calendar-alt"></i>
+                                ${formatDateTime(prediction.kickoff)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Load notifications
+        function loadNotifications() {
+            const container = document.getElementById("notificationsList");
+            container.innerHTML = '';
+            
+            if (notifications.length > 0) {
+                notifications.forEach(notification => {
+                    container.innerHTML += `
+                        <a href="#" class="list-group-item list-group-item-action notification-item mb-2">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">${notification.title}</h6>
+                                <small class="text-muted">${formatDate(notification.date)}</small>
+                            </div>
+                            <p class="mb-1">${notification.message}</p>
+                        </a>
+                    `;
+                });
+            } else {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-bell-slash text-muted fa-2x mb-3"></i>
+                        <p class="text-muted">No notifications yet</p>
+                    </div>
+                `;
+            }
+            
+            // Update notification count
+            document.getElementById("notificationCount").textContent = notifications.length;
+        }
+        
+        // Select subscription tier
+        function selectTier(element, tier) {
+            // Remove selected class from all tiers
+            document.querySelectorAll('.subscription-tier').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked tier
+            element.classList.add('selected');
+            selectedTier = tier;
+            
+            // Enable request button
+            document.getElementById('requestSubscriptionBtn').disabled = false;
+        }
+        
+        // Request VIP subscription
+        function requestSubscription() {
+            if (!selectedTier) return;
+            
+            // Determine plan details
+            let planName, amount;
+            switch(selectedTier) {
+                case 'one_week':
+                    planName = "1 Week VIP";
+                    amount = 7000;
+                    break;
+                case 'two_weeks':
+                    planName = "2 Weeks VIP";
+                    amount = 15000;
+                    break;
+                case 'one_month':
+                    planName = "1 Month VIP";
+                    amount = 30000;
+                    break;
+                case 'one_year':
+                    planName = "1 Year VIP";
+                    amount = 70000;
+                    break;
+            }
+            
+            // In a real app, this would send a request to the server
+            console.log(`Subscription requested: ${planName} for UGX ${amount}`);
+            
+            // Show verification modal
+            const verificationModal = new bootstrap.Modal(document.getElementById('verificationModal'));
+            verificationModal.show();
+            
+            // Update UI
+            document.getElementById('subscriptionStatus').style.display = 'block';
+            document.getElementById('statusText').textContent = "Your subscription request is pending approval";
+            document.getElementById('subscriptionStatus').className = "subscription-status status-pending";
+            
+            // Close subscription modal
+            const subscriptionModal = bootstrap.Modal.getInstance(document.getElementById('subscriptionModal'));
+            subscriptionModal.hide();
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load initial data
+            loadPredictions();
+            loadNotifications();
+            
+            // Set up event listeners
+            document.getElementById('notificationBtn').addEventListener('click', function() {
+                document.getElementById('notificationSidebar').classList.add('show');
+                document.getElementById('notificationOverlay').classList.add('show');
+            });
+            
+            document.getElementById('closeNotifications').addEventListener('click', function() {
+                document.getElementById('notificationSidebar').classList.remove('show');
+                document.getElementById('notificationOverlay').classList.remove('show');
+            });
+            
+            document.getElementById('notificationOverlay').addEventListener('click', function() {
+                document.getElementById('notificationSidebar').classList.remove('show');
+                this.classList.remove('show');
+            });
+            
+            // Show subscription status if exists
+            if (currentSubscriptionStatus) {
+                document.getElementById('subscriptionStatus').style.display = 'block';
+                if (currentSubscriptionStatus === "active") {
+                    document.getElementById('statusText').textContent = "Your VIP subscription is active!";
+                    document.getElementById('subscriptionStatus').className = "subscription-status status-active";
+                } else if (currentSubscriptionStatus === "pending") {
+                    document.getElementById('statusText').textContent = "Your subscription request is pending approval";
+                    document.getElementById('subscriptionStatus').className = "subscription-status status-pending";
+                }
+            }
+        });
+    </script>
+</body>
+</html>
